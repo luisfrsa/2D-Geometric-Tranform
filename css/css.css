@@ -1,0 +1,124 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  flaot: left;
+  width: 100%;
+  font-family: arial;
+}
+
+ul, li {
+  list-style-type: none;
+}
+
+ul li {
+  float: left;
+}
+
+#center_canvas {
+  padding-top: 50px;
+  margin: auto;
+  width: 1100px;
+}
+
+#center_canvas canvas {
+  cursor: crosshair;
+  float: left;
+  background: #fff;
+  border: solid 1px #000;
+  width: 1100px;
+  height: 550px;
+}
+
+#center_canvas #shapes, #center_canvas #transform {
+  float: left;
+  width: 80%;
+}
+
+#center_canvas #shapes li, #center_canvas #transform li {
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  max-width: 120px;
+}
+
+#center_canvas #shapes i, #center_canvas #transform i {
+  color: #2a47ea;
+}
+
+#center_canvas #coord {
+  float: right;
+  width: 20%;
+}
+
+#center_canvas #coord .mouse_pos {
+  float: left;
+  text-align: right;
+  width: 100%;
+}
+
+.fa-long-arrow-right {
+  font-size: 30px;
+  -webkit-transform: rotate(315deg);
+  -moz-transform: rotate(315deg);
+  -ms-transform: rotate(315deg);
+  -o-transform: rotate(315deg);
+  transform: rotate(315deg);
+}
+
+.fa-sort-asc {
+  font-size: 30px;
+  transform: scale(1.5, 3);
+  position: relative;
+  top: 16px;
+}
+
+.fa-square-o {
+  font-size: 30px;
+  transform: scale(1.2, 1);
+}
+
+.fa-circle-o {
+  font-size: 30px;
+}
+
+.fa-undo {
+  font-size: 30px;
+}
+
+.fa-arrows-alt {
+  font-size: 30px;
+}
+
+.fa-arrows {
+  font-size: 30px;
+}
+
+.fa-search-plus {
+  font-size: 30px;
+}
+
+.fa-search-minus {
+  font-size: 30px;
+}
+
+.fa-paint-brush {
+  font-size: 30px;
+}
+
+table {
+  width: 1100px;
+  margin: auto;
+}
+
+table td {
+  padding: 10px 10px;
+}
+
+table td, table th {
+  text-align: left;
+}
+
+table .table_selected {
+  font-weight: bold;
+  color: #2a47ea;
+}

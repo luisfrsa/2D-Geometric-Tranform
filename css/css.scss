@@ -1,0 +1,96 @@
+$canvasWSize:1100px;
+$canvasHSize:550px;
+$corp:#2a47ea;
+html,body{
+	margin:0;
+	padding:0;
+	flaot:left;
+	width:100%;
+	font-family:arial;
+}
+ul,li{
+	list-style-type: none;
+}
+ul{
+	li{
+		float:left;
+	}
+}
+
+#center_canvas{
+	padding-top:50px;
+	margin:auto;
+	width:$canvasWSize;
+	canvas{
+		cursor:crosshair;
+		float:left;
+		background:#fff;
+		border:solid 1px #000;
+		width:$canvasWSize;
+		height:$canvasHSize;	
+	}
+	#shapes,#transform{
+		float:left;
+		width:80%;
+		li{
+			cursor:pointer;
+			text-align:center;
+			width:100%;
+			max-width:120px;
+		}
+		i{
+			color:#2a47ea;
+		}
+	}
+	#coord{	
+		float:right;
+		width:20%;
+		.mouse_pos{
+			float:left;
+			text-align:right;
+			width:100%;
+		}
+	}
+}
+.fa-long-arrow-right{
+	font-size:30px; 
+    -webkit-transform: rotate(315deg);
+    -moz-transform: rotate(315deg);
+    -ms-transform: rotate(315deg);
+    -o-transform: rotate(315deg);
+    transform: rotate(315deg);
+}
+.fa-sort-asc{
+	font-size:30px;
+	transform:scale(1.5,3);
+	position:relative;
+	top:16px;
+}
+.fa-square-o{
+	font-size:30px;
+	transform:scale(1.2,1);
+}
+.fa-circle-o{font-size:30px;}
+.fa-undo{font-size:30px;}
+.fa-arrows-alt{font-size:30px;}
+.fa-arrows{font-size:30px;}
+.fa-search-plus{font-size:30px;}
+.fa-search-minus{font-size:30px;}
+.fa-paint-brush{font-size:30px;}
+
+table{
+	width:$canvasWSize;
+	margin:auto;
+	td{
+		padding:10px 10px;
+	}
+}
+table{
+	td,th{
+		text-align:left;
+	}
+	.table_selected{
+		font-weight:bold;
+		color:$corp;
+	}
+}

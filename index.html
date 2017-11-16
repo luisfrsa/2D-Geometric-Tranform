@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Transformações geometricas bidimensionais</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://use.fontawesome.com/f6c37f8c46.js"></script>
+<!--	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+-->
+	<link rel="stylesheet" href="" >
+</head>
+<body>
+	iniciar transformacoes
+	fazer algo que não cubra a visão do canvas
+	<div id='center_canvas'>
+		<canvas id="canvas" width="1100" height="550"></canvas>
+		<div id="panel"></div>
+		<div id='coord'>
+			<div class='mouse_pos'>
+				Pos.x => <span id='current_pos_x'></span> <br/>
+			    Pos.y => <span id='current_pos_y'></span> 
+			</div>
+			<!--<div class='mouse_pos'>
+				Pos.x => <span id='last_pos_x'></span> <br/>
+			    Pos.y => <span id='last_pos_y'></span> 
+			</div>-->
+		</div>
+		<div id='shapes'>
+			<ul>
+				<li id='linha'>
+					<i class="fa fa-long-arrow-right" aria-hidden="true"></i><br/>
+					Linha
+				</li>
+				<li id='triangulo'>
+					<i class="fa fa-sort-asc" aria-hidden="true"></i><br/>
+					Triângulo
+				</li>
+				<li id='retangulo'>
+					<i class="fa fa-square-o" aria-hidden="true"></i><br/>
+					Retângulo
+				</li>
+				<li id='circunferencia'>
+					<i class="fa fa-circle-o" aria-hidden="true"></i><br/>
+					Circunferência
+				</li>
+
+			</ul>
+		</div>
+		<div id='transform'>
+			<ul>
+				<li id='rotacionar'>
+					<i class="fa fa-undo" aria-hidden="true"></i><br/>
+					Rotacionar
+				</li>
+				<li id='escala'>
+					<i class="fa fa-arrows-alt" aria-hidden="true"></i><br/>
+					Mudança de escala
+				</li>
+				<li id='translacao'>
+					<i class="fa fa-arrows" aria-hidden="true"></i><br/>
+					Translação
+				</li>
+				<!--<li id='zoom_in'>
+					<i class="fa fa-search-plus" aria-hidden="true"></i><br/>
+					Zoom +
+				</li>-->
+				<li id='zoon_out'>
+					<i class="fa fa-search-minus" aria-hidden="true"></i><br/>
+					Zoom -
+				</li>
+				<li id='clear'>
+					<i class="fa fa-paint-brush" aria-hidden="true"></i><br/>
+					Limpar
+				</li>
+			</ul>
+		</div>
+	</div>
+	<table>		
+		<tbody></tbody>
+	</table>
+	<script>
+		/*
+		Prevent cache without backend
+		*/
+		var js = document.createElement('script');
+		js.setAttribute('src','js/js.js?time='+new Date().getTime());
+		document.body.appendChild(js);
+
+		var css = document.createElement('link');
+		css.setAttribute('href','css/css.css?time='+new Date().getTime());
+		css.setAttribute('rel','stylesheet');
+		document.head.appendChild(css);
+	</script>
+</body>
+</html>
