@@ -12,24 +12,25 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 -->
-	<link rel="stylesheet" href="" >
 </head>
 <body>
-	iniciar transformacoes
-	fazer algo que não cubra a visão do canvas
 	<div id='center_canvas'>
-		<canvas id="canvas" width="1100" height="550"></canvas>
-		<div id="panel"></div>
-		<div id='coord'>
-			<div class='mouse_pos'>
-				Pos.x => <span id='current_pos_x'></span> <br/>
-			    Pos.y => <span id='current_pos_y'></span> 
+		<div id="canvas_block">
+			<canvas id="canvas" width="1100" height="550"></canvas>
+			<div id='coord'>
+				<div class='mouse_pos'>Pos.x =><span id='current_pos_x'></span><br/>Pos.y =><span id='current_pos_y'></span>
+				</div>
+				<!--<div class='mouse_pos'>
+					Pos.x => <span id='last_pos_x'></span> <br/>
+				    Pos.y => <span id='last_pos_y'></span> 
+				</div>-->
 			</div>
-			<!--<div class='mouse_pos'>
-				Pos.x => <span id='last_pos_x'></span> <br/>
-			    Pos.y => <span id='last_pos_y'></span> 
-			</div>-->
 		</div>
+		<div id="panel">
+			<ul></ul>
+			<input type="text" id="input" value='100,150'>
+		</div>
+		
 		<div id='shapes'>
 			<ul>
 				<li id='linha'>
@@ -75,7 +76,7 @@
 				</li>
 				<li id='clear'>
 					<i class="fa fa-paint-brush" aria-hidden="true"></i><br/>
-					Limpar
+					Limpar Canvas
 				</li>
 			</ul>
 		</div>

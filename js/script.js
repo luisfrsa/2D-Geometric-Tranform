@@ -3,8 +3,29 @@ var log = function(s){
 	console.log(s);
 };
 var panel = {
-	write:function(s){$('#panel').html(s)},
-	clear:function(){$('#panel').html("")},
+	write:function(s,author){
+		var who="<span class='system_console'>Console</span>: ";
+		if(typeof(author)!=='undefined' && author=='user'){
+			who = "<span class='user_console'>User</span>: ";
+		}
+		$ul =$('#panel').find('ul'); 
+		$ul.append('<li>'+who+s+'</li>');
+		panel.scroll();
+	},
+	clear:function(){
+		$('#panel').find('ul').append('<li class="clear_line"></li>');
+		panel.scroll();
+
+	},
+	clearAll:function(){
+		$('#panel').find('ul').html('');
+
+	},
+	scroll:function(){
+		$ul =$('#panel').find('ul'); 
+		$('#panel').scrollTop($ul.height());
+
+	}
 }
 var calcDist = function(from,to){
 	return Math.sqrt(Math.pow(from.x-to.x,2)+Math.pow(from.y-to.y,2)).toFixed(2);
@@ -21,6 +42,8 @@ var getMiddleTriangle = function(args){
 
 /******GLOBAL*******/
 
+var LETRAS = ["A","B","C","D","E","F","G","H"];
+
 var WaitClick=0;
 var WaitCoord = [];
 
@@ -34,6 +57,8 @@ var LAST_ID=0;
 var OBJECT_LIST = [];
 
 var TABLE =  Table();
+
+var BUFFER = Buffer();
 
 Array.prototype.add = function(el){
 	this.push(el);
@@ -64,18 +89,41 @@ Array.prototype.getActives = function(arrIds){
 	});
 	return arrReturn;
 }
+Array.prototype.update=function(new_objs){
+	//log(self);
+	//log(new_objs);
+	return;
+	self = this;
+	new_objs.forEach(function(new_obj){
+		self.removeById(new_obj.id);
+		self.push(new_obj);
+	});
+	self.render();
+};
+Array.prototype.render=function(){
+	blank_canvas();
+	this.forEach(function(obj){
+		switch(obj.type){
+			case 'triangle':
+				SHAPE.triangle(obj);
+			break;
+
+		}
+	});
+};
 /******GLOBAL*******/
 
 /******CLASS*******/
 var Coord = function(x=null,y=null){
 	this.x=x;
 	this.y=y; 
+	this.z=1; 
 };
 var CURRENT_POS = new Coord();
 
 var resetCanvas = function(){
 	$canvas.unbind("click");
-	
+	BUFFER.clear();
 }
 var Draw = {
 	write:function(string,middle){
@@ -85,6 +133,12 @@ var Draw = {
 		ctx.font = "15px Arial";
 		ctx.fillText(string,middle.x,middle.y);
 		ctx.closePath();
+	},
+	coords:function(coords){
+		var pontos="";
+		for(var i=0;i<coords.length;i++){
+			Draw.write(LETRAS[i],{x:(coords[i].x-10),y:(coords[i].y-10)});
+		}
 	},
 
 	line:function(coord){
@@ -96,6 +150,7 @@ var Draw = {
 		ctx.lineTo(to.x,to.y);
 		ctx.stroke(); 
 		ctx.closePath();
+		Draw.coords(coord);
 	},
 	rect:function(coord){
 		var from = coord[0];
@@ -109,6 +164,9 @@ var Draw = {
 		ctx.lineTo(from.x,from.y);
 		ctx.stroke(); 
 		ctx.closePath();
+
+		Draw.coords([new Coord(from.x,from.y),new Coord(to.x,from.y),new Coord(to.x,to.y),new Coord(from.x,to.y)]);
+
 	},
 	circle:function(coord){
 		var from = coord[0];
@@ -132,6 +190,9 @@ var Draw = {
 		ctx.lineTo(A.x,A.y);
 		ctx.stroke(); 
 		ctx.closePath();
+
+		Draw.coords(coord);
+
 	},
 	
 	
@@ -141,9 +202,9 @@ var Object = function(){
 
 	this.reset = resetCanvas;
 	this.reset();
-
 	this.id=LAST_ID++;
 	this.type=null;
+	this.matrix=[];
 	this.coord = []; 
 	this.waitClick=0;
 	this.done=function(){};
@@ -154,7 +215,15 @@ var Object = function(){
 				self.coord.push(new Coord(CURRENT_POS.x,CURRENT_POS.y));
 				self.waitClick--;	
 				if(self.waitClick==0){
-					self.done(self.coord);	
+					self.done(self);	
+					OBJECT_LIST.add(self);
+					var pontos="";
+					for(var i=0;i<self.coord.length;i++){
+						pontos+=LETRAS[i]+" ("+(self.coord[i].x)+" , "+(self.coord[i].y)+"); ";
+					}
+					panel.write("Elemento <span class='destaque'>"+self.name+"</span> com id <span class='destaque'>"+self.id +"</span> desenhado no canvas com os pontos <span class='destaque'>"+pontos+"</span>.");
+
+					panel.clear();
 					$(this).unbind("click");
 				}
 			}else{
@@ -170,6 +239,6 @@ var Object = function(){
 $canvas.on('mousemove',function($elem){
 	CURRENT_POS.x = $elem.offsetX;
 	CURRENT_POS.y = $elem.offsetY;
-	$('#current_pos_x').html(CURRENT_POS.x/100);
-	$('#current_pos_y').html(CURRENT_POS.y/100);
+	$('#current_pos_x').html(CURRENT_POS.x);
+	$('#current_pos_y').html(CURRENT_POS.y);
 });

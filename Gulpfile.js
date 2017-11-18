@@ -8,6 +8,9 @@ var livereload = require('../node_modules/gulp-livereload');
 // Definimos o diretorio dos arquivos para evitar repetição futuramente
 var filesJS = ([
     "./js/table.js",
+    "./js/buffer.js",
+    "./js/shapes.js",
+    "./js/matrix.js",
     "./js/script.js",
     "./js/click.js",
 ]);

@@ -8,15 +8,34 @@ html,body{
 	width:100%;
 	font-family:arial;
 }
-ul,li{
-	list-style-type: none;
+* {
+    box-sizing: border-box;
 }
 ul{
+	margin:0;
+	padding:0;
 	li{
+		list-style-type: none;
 		float:left;
 	}
 }
 
+table{
+	width:$canvasWSize;
+	margin:auto;
+	td{
+		padding:10px 10px;
+	}
+}
+table{
+	td,th{
+		text-align:left;
+	}
+	.table_selected{
+		font-weight:bold;
+		color:$corp;
+	}
+}
 #center_canvas{
 	padding-top:50px;
 	margin:auto;
@@ -30,8 +49,9 @@ ul{
 		height:$canvasHSize;	
 	}
 	#shapes,#transform{
+		margin-top:15px;
 		float:left;
-		width:80%;
+		width:100%;		
 		li{
 			cursor:pointer;
 			text-align:center;
@@ -44,7 +64,7 @@ ul{
 	}
 	#coord{	
 		float:right;
-		width:20%;
+		width:15%;
 		.mouse_pos{
 			float:left;
 			text-align:right;
@@ -52,6 +72,50 @@ ul{
 		}
 	}
 }
+#canvas_block{
+	position:relative;
+	overflow: hidden;
+	float:left;
+	#coord{
+		position:absolute;
+		bottom:5px;
+		right:5px;
+	}
+}
+
+
+#panel{
+	box-shadow: 0 0 1px red;
+	padding:15px 2%;
+	float:left;
+	width:100%;
+	margin-top:15px;
+	max-height:200px;
+	position:relative;
+	overflow-y: scroll;
+	ul{
+		float:left;
+		width:100%;
+		.clear_line{
+			width:100%;
+			border-top:dotted 1px;
+			margin-top:5px;
+			margin-bottom:5px;
+		}
+		li{
+			width:90%;
+			padding-top:5px;
+			padding-bottom:5px;
+		}
+	}
+	input{
+		margin-top:10px;
+		float:left;
+		width:100%;
+		padding:5px 1%;
+	}
+}
+
 .fa-long-arrow-right{
 	font-size:30px; 
     -webkit-transform: rotate(315deg);
@@ -78,19 +142,15 @@ ul{
 .fa-search-minus{font-size:30px;}
 .fa-paint-brush{font-size:30px;}
 
-table{
-	width:$canvasWSize;
-	margin:auto;
-	td{
-		padding:10px 10px;
-	}
+.destaque{
+	color:$corp;
+	font-weight: bold;
 }
-table{
-	td,th{
-		text-align:left;
-	}
-	.table_selected{
-		font-weight:bold;
-		color:$corp;
-	}
+.system_console{
+	color:#16bf35;
+	font-weight: bold;
+}
+.user_console{
+	color:#831eaa;
+	font-weight: bold;
 }

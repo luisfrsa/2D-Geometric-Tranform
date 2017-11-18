@@ -18,11 +18,10 @@ var Table = function(){
 	}
 
 	var createTdCoord= function(coord){
-		var letras = ["A","B","C","D","E","F","G","H"];
+		var LETRAS = ["A","B","C","D","E","F","G","H"];
 		var str="";
-		log(coord.length);
 		for(var i=0;i<coord.length;i++){
-			str+=letras[i]+" ("+(coord[i].x/100)+" , "+(coord[i].y/100)+"); ";
+			str+=LETRAS[i]+" ("+(coord[i].x/100)+" , "+(coord[i].y/100)+"); ";
 		}
 		return createTd(str);
 	}
@@ -49,8 +48,18 @@ var Table = function(){
 			$(this).parent('td').parent('tr').removeClass('table_selected');
 		}
 	};
+	var getSelecteds = function(){
+		var ids = [];
+		$('table').find('input').each(function(){
+			if($(this).is(':checked')){
+				ids.push(parseInt($(this).val()));
+			}
+		});
+		return ids;
+	}
 	return {
 		updateTabele:updateTabele,
-		clear:clear
+		clear:clear,
+		getSelecteds:getSelecteds
 	}
 }
