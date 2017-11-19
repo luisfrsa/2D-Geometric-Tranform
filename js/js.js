@@ -1,10 +1,42 @@
+/******COMMON*******/
+var log = function(s){
+	console.log(s);
+};
+
+var calcDist = function(from,to){
+	return Math.sqrt(Math.pow(from.x-to.x,2)+Math.pow(from.y-to.y,2)).toFixed(2);
+}
+var getMiddle = function(from,to){
+	//return new Coord((Math.abs(from.x)+Math.abs(to.x))/2,(Math.abs(from.y)+Math.abs(to.y))/2);
+	return new Coord(parseInt((from.x+to.x)/2),parseInt((from.y+to.y)/2));
+}
+var getMiddleCoords = function(args){
+	var x=0,y=0,count=0;
+	for(var i=0;i<args.length;i++){
+		count++;
+		x+=args[i].x;
+		y+=args[i].y;
+	}
+	return new Coord(parseInt(x/count),parseInt(y/count));
+}
+/*var agetMiddleCoords = function(args){
+	//return new Coord((Math.abs(from.x)+Math.abs(to.x))/2,(Math.abs(from.y)+Math.abs(to.y))/2);
+	return new Coord(parseInt((args[0].x+args[1].x+args[2].x)/3),parseInt((args[0].y+args[1].y+args[2].y)/3));
+}*/
+/******COMMON*******/
 var Table = function(){
 
-	var clear = function(){
-		$('table>tbody').first().html('<tr><th></th><th>Id</th><th>Objeto</th><th>Coordenada pontos</th></tr>');
+	var clear = function(){ 
+		$('table>tbody').first().html('<tr><th><input type="checkbox" onclick="window.TABLE.check_all(this)"></th><th>Id</th><th>Objeto</th><th>Coordenada pontos</th></tr>');
 	}
-	var updateTabele = function(objs){
-		clear();
+	var check_all = function(el){  
+		$this = $(el);
+		$('table').find('input').each(function(){
+			$(this).prop('checked',$this.prop('checked'));
+		});
+	}
+	var updateTabele = function(objs){ 
+		clear(); 
 		objs.forEach(function(el){
 			var tr = document.createElement("tr");
 			tr.appendChild(createCheckbox(el.id));
@@ -18,10 +50,9 @@ var Table = function(){
 	}
 
 	var createTdCoord= function(coord){
-		var LETRAS = ["A","B","C","D","E","F","G","H"];
 		var str="";
 		for(var i=0;i<coord.length;i++){
-			str+=LETRAS[i]+" ("+(coord[i].x/100)+" , "+(coord[i].y/100)+"); ";
+			str+=LETRAS[i%LETRAS.length]+" ("+(coord[i].x)+" , "+(coord[i].y)+"); ";
 		}
 		return createTd(str);
 	}
@@ -60,7 +91,8 @@ var Table = function(){
 	return {
 		updateTabele:updateTabele,
 		clear:clear,
-		getSelecteds:getSelecteds
+		getSelecteds:getSelecteds,
+		check_all:check_all
 	}
 }
 var Buffer = function(){
@@ -98,119 +130,191 @@ var Buffer = function(){
 	}
 }
 
-var SHAPE ={
-	triangle:function(current){ 
-		if(typeof(current)!=='undefined'){
-			self = current;
-		}else{
-			self = this;
+var transform = function(){
+	var matrix2Coord = function(matrix){
+		var coords = [];
+		for(var j=0; j<matrix[0].length;j++) {
+			coords[j] = new Coord();
 		}
-		Draw.triangle(self.coord);
-		middle = getMiddleTriangle(self.coord);
-		Draw.write(self.name+" - "+self.id,middle);
-	},
-	circle:function(current){ 
-		if(typeof(current)!=='undefined'){
-			self = current;
-		}else{
-			self = this;
-		}
-		Draw.circle(self.coord);
-		Draw.write(self.name+" - "+self.id,self.coord[0]);
-	},
-	line:function(current){ 
-		if(typeof(current)!=='undefined'){
-			self = current;
-		}else{
-			self = this;
-		}
-		Draw.line(self.coord);
-		middle = getMiddle(self.coord[0],self.coord[1]);
-		Draw.write(self.name+" - "+self.id,middle);
-	},
-	rectangle:function(current){ 
-		if(typeof(current)!=='undefined'){
-			self = current;
-		}else{
-			self = this;
-		}
-		Draw.rect(self.coord);
-		middle = getMiddle(self.coord[0],self.coord[1]);
-		Draw.write(self.name+" - "+self.id,middle);
-	},
- };
-var MATRIX ={
-	translation:function(val){
-		return [
-		[1,0,val.x],
-		[0,1,val.y],
-		[0,0,1],
-		];
-	},
-	rotation:function(val){
-		return [
-		[Math.cos(val),-Math.sen(val),0],
-		[Math.sen(val),Math.cos(val) ,0],
-		[0            ,0             ,1],
-		];
-	},
-	scale:function(val){
-		return [
-		[val.x,0     ,0],
-		[0    ,val.y0,0],
-		[0    ,0     ,1],
-		];
-	},
-}
+		for(var j=0; j<matrix[0].length;j++) {
+			for(var i=0; i<matrix.length;i++) {
+				var curren;
+				switch(i){
+					case 0:
+						coords[j].x = matrix[i][j];
+						curren='x';
+					break;
+					case 1:
+						curren='y'; 
+						coords[j].y = matrix[i][j];
+					break;
+					case 2:
+						curren='z';
+						coords[j].z = matrix[i][j];
+					break;
+				}
+				//log('coords [j='+j+'].'+curren+'=matrix [i='+i+'][j='+j+']='+matrix[i][j]);
+		    }
+	    }
+	    return coords;
+	}
 
-/******COMMON*******/
-var log = function(s){
-	console.log(s);
-};
-var panel = {
-	write:function(s,author){
-		var who="<span class='system_console'>Console</span>: ";
-		if(typeof(author)!=='undefined' && author=='user'){
-			who = "<span class='user_console'>User</span>: ";
+	var mul_matrix = function(matrix1, matrix2){
+		log(arguments); 
+	    var matrix_result = [];
+	    for(var i=0; i<matrix1.length;i++) {
+	        matrix_result[i] = [];
+	        for (var j=0;j<matrix2[0].length;j++) {
+	            var sum = 0;
+	            for(var k=0;k<matrix1[0].length;k++) {
+	                sum+= matrix1[i][k] * matrix2[k][j];
+	            }
+	            matrix_result[i][j] = sum;
+	        }
+	    }
+	    return matrix_result;
+	}
+	
+
+	var fixY = function(obj_list,heightY){
+		heightY = heightY || 550;
+		obj_list.map(function(obj){
+			obj.coord.map(function(c){
+				c.y = heightY - c.y; 
+				return c;
+			});
+		});
+		return obj_list;
+	}
+	var coord2Matrix = function(obj){
+		var matrix = [];
+		for(var i=0; i<obj.coord.length;i++) {
+			matrix[0]=[];
+			matrix[1]=[];
+			matrix[2]=[];
 		}
-		$ul =$('#panel').find('ul'); 
-		$ul.append('<li>'+who+s+'</li>');
-		panel.scroll();
-	},
-	clear:function(){
-		$('#panel').find('ul').append('<li class="clear_line"></li>');
-		panel.scroll();
+		for(var i=0; i<obj.coord.length;i++) {
+	    	matrix[0][i] = obj.coord[i].x;
+	    	matrix[1][i] = obj.coord[i].y;
+	    	matrix[2][i] = obj.coord[i].z;
+	    }
+	    return matrix;
+	}
+	var obj2Matrix = function(obj_list){
+		for(var i=0;i<obj_list.length;i++){
+			obj_list[i].matrix=coord2Matrix(obj_list[i]);
+		}
+		return obj_list;
+		//coord2Matrix
+		var cur_obj; 
+		for(var i=0;i<obj_list.length;i++){
+			var matriz=[];
+			cur_obj=obj_list[i];
+			for(var j=0;j<cur_obj.coord.length;j++){
+				matriz[j]=[];
+				//matriz[cur_obj.id][j] = [];
+				matriz[j][0] = cur_obj.coord[j].x;
+				matriz[j][1] = cur_obj.coord[j].y;
+				matriz[j][2] = cur_obj.coord[j].z;
+			}
+			obj_list[i].matrix= matriz;
+		}
+		return obj_list;
+	}	
 
-	},
-	clearAll:function(){
-		$('#panel').find('ul').html('');
+	var translation = function(obj,value){
+		obj.matrix = mul_matrix(MATRIX.translation(value),obj.matrix);
+		var coord = matrix2Coord(obj.matrix);
+		obj.coord=null;
+		obj.coord = coord;
+		log('translation coord');
+		log(coord);
+		log(obj.coord);
+		return obj;
+	}; 
+	var skew = function(obj,value){    
+		obj.matrix = mul_matrix(MATRIX.scale(value),obj.matrix); 
+		obj.coord = matrix2Coord(obj.matrix);
+		return obj;
+	}; 
+	var rotate_degree = function(obj,value){
+		obj.matrix = mul_matrix(MATRIX.rotation(value),obj.matrix);
+		obj.coord = matrix2Coord(obj.matrix);
+		return obj;
+	};
 
-	},
-	scroll:function(){
-		$ul =$('#panel').find('ul'); 
-		$('#panel').scrollTop($ul.height());
+	var getInputXY = function(str){
+		var split = str.split(',');
+		return {
+			x:parseFloat(split[0]),
+			y:parseFloat(split[1]),
+		}
+	}
+	var translate_to_origin = function(obj){
+		var middle;
+		switch(obj.type){
+			case "triangle":
+			case "line":
+			case "rectangle":
+				middle = getMiddleCoords(obj.coord);
+			break;
+			case "circle":
+				middle = obj.coord[0];
+			break;
 
+		}	
+		return {
+			obj:translation(obj,new Coord(-(middle.x),-(middle.y))),
+			middle:middle
+		};
+	}
+	var init_common = function(obj_actives){
+		var obj_fix_y = fixY(obj_actives);
+		return obj2Matrix(obj_fix_y);
+	}
+	var end_common= function(obj_transformed){
+		fixY(obj_transformed);
+	}
+
+	var translate = function(obj_actives,value){
+		var obj_matrix = init_common(obj_actives);
+		obj_matrix.map(function(obj){
+			return translation(obj,value);			
+		});		
+		end_common(obj_matrix);
+	}
+	var scale = function(obj_actives,value){
+		var obj_matrix = init_common(obj_actives);
+		obj_matrix.map(function(obj){
+			var ret_origin =  translate_to_origin(obj);	
+			obj = skew(ret_origin.obj,value);
+			return translation(obj,new Coord(ret_origin.middle.x,ret_origin.middle.y));
+		});		
+		end_common(obj_matrix);
+	}
+	var rotate = function(obj_actives,degree){
+		var obj_matrix = init_common(obj_actives);
+		obj_matrix.map(function(obj){
+			//return rotate_degree(obj,degree);em relacao a origem
+			var ret_origin =  translate_to_origin(obj);	
+			//return ret_origin.obj;
+			obj = rotate_degree(ret_origin.obj,degree);
+			//return obj;
+			return translation(obj,new Coord(ret_origin.middle.x,ret_origin.middle.y));
+		});		
+		end_common(obj_matrix);
+	}
+	return{
+		getInputXY:getInputXY,
+		translate:translate,
+		scale:scale,
+		rotate:rotate,
 	}
 }
-var calcDist = function(from,to){
-	return Math.sqrt(Math.pow(from.x-to.x,2)+Math.pow(from.y-to.y,2)).toFixed(2);
-}
-var getMiddle = function(from,to){
-	//return new Coord((Math.abs(from.x)+Math.abs(to.x))/2,(Math.abs(from.y)+Math.abs(to.y))/2);
-	return new Coord((from.x+to.x)/2,(from.y+to.y)/2);
-}
-var getMiddleTriangle = function(args){
-	//return new Coord((Math.abs(from.x)+Math.abs(to.x))/2,(Math.abs(from.y)+Math.abs(to.y))/2);
-	return new Coord((args[0].x+args[1].x+args[2].x)/3,(args[0].y+args[1].y+args[2].y)/3);
-}
-/******COMMON*******/
-
 /******GLOBAL*******/
-
-var LETRAS = ["A","B","C","D","E","F","G","H"];
-
 var WaitClick=0;
 var WaitCoord = [];
+var LETRAS = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
 
 var $canvas = $('#canvas');
 var ctx = canvas.getContext("2d");
@@ -222,8 +326,12 @@ var LAST_ID=0;
 var OBJECT_LIST = [];
 
 var TABLE =  Table();
-
+var TRANSFORM = transform();
 var BUFFER = Buffer();
+
+
+
+/******GLOBAL*******/
 
 Array.prototype.add = function(el){
 	this.push(el);
@@ -254,10 +362,10 @@ Array.prototype.getActives = function(arrIds){
 	});
 	return arrReturn;
 }
+/*
+not used
+*/
 Array.prototype.update=function(new_objs){
-	//log(self);
-	//log(new_objs);
-	return;
 	self = this;
 	new_objs.forEach(function(new_obj){
 		self.removeById(new_obj.id);
@@ -272,11 +380,130 @@ Array.prototype.render=function(){
 			case 'triangle':
 				SHAPE.triangle(obj);
 			break;
-
-		}
+			case 'line':
+				SHAPE.line(obj);
+			break;
+			case 'circle':
+				SHAPE.circle(obj);
+			break;
+			case 'rectangle':
+				SHAPE.rectangle(obj);
+			break;
+			case 'poligono':
+				SHAPE.poligono(obj);
+			break;
+		} 
 	});
+	TABLE.updateTabele(this);
 };
-/******GLOBAL*******/
+var SHAPE ={
+	triangle:function(current){ 
+		if(typeof(current)!=='undefined'){
+			self = current;
+		}else{
+			self = this;
+		}
+		Draw.triangle(self.coord);
+		middle = getMiddleCoords(self.coord);
+		Draw.write(self.name+" - "+self.id,middle);
+	},
+
+	circle:function(current){ 
+		if(typeof(current)!=='undefined'){
+			self = current;
+		}else{
+			self = this;
+		}
+		Draw.circle(self.coord);
+		Draw.write(self.name+" - "+self.id,self.coord[0]);
+	},
+	line:function(current){ 
+		if(typeof(current)!=='undefined'){
+			self = current;
+		}else{
+			self = this;
+		}
+		Draw.line(self.coord);
+		middle = getMiddle(self.coord[0],self.coord[1]);
+		Draw.write(self.name+" - "+self.id,middle);
+	},
+
+	rectangle:function(current){ 
+		if(typeof(current)!=='undefined'){
+			self = current;
+		}else{
+			self = this;
+		}
+
+		self.coord.push(new Coord(self.temp_coord[0].x,self.temp_coord[0].y,));
+		self.coord.push(new Coord(self.temp_coord[1].x,self.temp_coord[0].y,));
+		self.coord.push(new Coord(self.temp_coord[1].x,self.temp_coord[1].y,));
+		self.coord.push(new Coord(self.temp_coord[0].x,self.temp_coord[1].y,));
+
+		Draw.rect(self.coord);
+		middle = getMiddle(self.coord[0],self.coord[2]);
+		Draw.write(self.name+" - "+self.id,middle);
+	},
+	poligono:function(current){  
+		if(typeof(current)!=='undefined'){
+			self = current;
+		}else{
+			self = this;
+		}
+		Draw.poligono(self.coord);
+		middle = getMiddleCoords(self.coord);
+		Draw.write(self.name+" - "+self.id,middle);
+	},
+ };
+var MATRIX ={
+	translation:function(val){
+		return [
+		[1,0,val.x],
+		[0,1,val.y],
+		[0,0,1],
+		];
+	},
+	rotation:function(val){
+		return [
+		[Math.cos(val* Math.PI / 180.0),-Math.sin(val* Math.PI / 180.0),0],
+		[Math.sin(val* Math.PI / 180.0),Math.cos(val* Math.PI / 180.0) ,0],
+		[0                             ,0                              ,1],
+		];
+	},
+	scale:function(val){
+		return [
+		[val.x,0     ,0],
+		[0    ,val.y ,0],
+		[0    ,0     ,1],
+		];
+	},
+}
+
+var panel = {
+	write:function(s,author){
+		var who="<span class='system_console'>Console</span>: ";
+		if(typeof(author)!=='undefined' && author=='user'){
+			who = "<span class='user_console'>User</span>: ";
+		}
+		$ul =$('#panel').find('ul'); 
+		$ul.append('<li>'+who+s+'</li>');
+		panel.scroll();
+	},
+	clear:function(){
+		$('#panel').find('ul').append('<li class="clear_line"></li>');
+		panel.scroll();
+
+	},
+	clearAll:function(){
+		$('#panel').find('ul').html('');
+
+	},
+	scroll:function(){
+		$ul =$('#panel').find('ul'); 
+		$('#panel').scrollTop($ul.height());
+
+	}
+}
 
 /******CLASS*******/
 var Coord = function(x=null,y=null){
@@ -302,7 +529,7 @@ var Draw = {
 	coords:function(coords){
 		var pontos="";
 		for(var i=0;i<coords.length;i++){
-			Draw.write(LETRAS[i],{x:(coords[i].x-10),y:(coords[i].y-10)});
+			Draw.write(LETRAS[i%LETRAS.length],{x:(coords[i].x-10),y:(coords[i].y-10)});
 		}
 	},
 
@@ -318,19 +545,21 @@ var Draw = {
 		Draw.coords(coord);
 	},
 	rect:function(coord){
-		var from = coord[0];
-		var to = coord[1];
+		var A = coord[0];
+		var B = coord[1];
+		var C = coord[2];
+		var D = coord[3];
 
 		ctx.beginPath();
-		ctx.moveTo(from.x,from.y);
-		ctx.lineTo(from.x,to.y);
-		ctx.lineTo(to.x,to.y);
-		ctx.lineTo(to.x,from.y);
-		ctx.lineTo(from.x,from.y);
+		ctx.moveTo(A.x,A.y);
+		ctx.lineTo(B.x,B.y);
+		ctx.lineTo(C.x,C.y);
+		ctx.lineTo(D.x,D.y);
+		ctx.lineTo(A.x,A.y);
 		ctx.stroke(); 
 		ctx.closePath();
 
-		Draw.coords([new Coord(from.x,from.y),new Coord(to.x,from.y),new Coord(to.x,to.y),new Coord(from.x,to.y)]);
+		Draw.coords(coord);
 
 	},
 	circle:function(coord){
@@ -359,6 +588,25 @@ var Draw = {
 		Draw.coords(coord);
 
 	},
+	poligono:function(coord){
+		var A = coord[0];
+		var B = coord[1];
+		var C = coord[2];
+
+		ctx.beginPath();
+		ctx.moveTo(coord[0].x,coord[0].y);
+
+		for (var i=1;i<coord.length;i++){
+			ctx.lineTo(coord[i].x,coord[i].y);
+		}
+		ctx.lineTo(coord[0].x,coord[0].y);
+
+		ctx.stroke(); 
+		ctx.closePath();
+
+		Draw.coords(coord);
+
+	},
 	
 	
 };
@@ -367,39 +615,43 @@ var Object = function(){
 
 	this.reset = resetCanvas;
 	this.reset();
-	this.id=LAST_ID++;
+	this.id=LAST_ID;
 	this.type=null;
 	this.matrix=[];
 	this.coord = []; 
 	this.waitClick=0;
 	this.done=function(){};
 	this.select=function(){};
+	this.temp_coord = [];
 	this.clickEventInit = function(){
 		$canvas.on('click',function(){
+			$this_canvas = $(this);
 			if(self.waitClick>0){
-				self.coord.push(new Coord(CURRENT_POS.x,CURRENT_POS.y));
+				if(self.type=='rectangle'){
+					self.temp_coord.push(new Coord(CURRENT_POS.x,CURRENT_POS.y));
+				}else{
+					self.coord.push(new Coord(CURRENT_POS.x,CURRENT_POS.y));
+				}
 				self.waitClick--;	
 				if(self.waitClick==0){
 					self.done(self);	
 					OBJECT_LIST.add(self);
 					var pontos="";
 					for(var i=0;i<self.coord.length;i++){
-						pontos+=LETRAS[i]+" ("+(self.coord[i].x)+" , "+(self.coord[i].y)+"); ";
+						pontos+=LETRAS[i%LETRAS.length]+" ("+(self.coord[i].x)+" , "+(self.coord[i].y)+"); ";
 					}
 					panel.write("Elemento <span class='destaque'>"+self.name+"</span> com id <span class='destaque'>"+self.id +"</span> desenhado no canvas com os pontos <span class='destaque'>"+pontos+"</span>.");
-
 					panel.clear();
-					$(this).unbind("click");
+					$this_canvas.unbind("click");
+					LAST_ID++;
 				}
 			}else{
-				$(this).unbind("click");
+				$this_canvas.unbind("click");
 			}
 		});
 	}
 }
 /******CLASS*******/
-
-
 
 $canvas.on('mousemove',function($elem){
 	CURRENT_POS.x = $elem.offsetX;
@@ -443,7 +695,7 @@ $('#circunferencia').on('click',function(){
 
 });
 $('#triangulo').on('click',function(){
-	panel.write("Clique em <span class='destaque'>3</span> pontos para desenhar uma <span class='destaque'>triângulo</span>.");
+	panel.write("Clique em <span class='destaque'>3</span> pontos para desenhar um <span class='destaque'>triângulo</span>.");
 	obj = new Object();
 	obj.type='triangle';
 	obj.name='Triângulo';
@@ -451,6 +703,19 @@ $('#triangulo').on('click',function(){
 	obj.done= SHAPE.triangle;
 	obj.clickEventInit();
 
+});
+$('#poligono').on('click',function(){
+	panel.write("Digite o número de pontos do polígono.");
+		BUFFER.setEnterEvent(function(val){
+		val = parseInt(val);
+		panel.write("Clique em <span class='destaque'>"+val+"</span> pontos para desenhar um <span class='destaque'>polígono</span>.");
+		obj = new Object();
+		obj.type='poligono';
+		obj.name='Polígono';
+		obj.waitClick=val;
+		obj.done= SHAPE.poligono;
+		obj.clickEventInit();
+	});
 });
 var blank_canvas = function(){
 	TABLE.clear();
@@ -475,94 +740,7 @@ $('#input').on('keydown',function(e){
     }
 });
 
-var getInputXY = function(str){
-	var split = str.split(',');
-	return {
-		x:parseFloat(split[0]),
-		y:parseFloat(split[1]),
-	}
-}
-var coord2Matrix = function(obj){
-	var matrix = [];
-	for(var i=0; i<obj.length;i++) {
-		matrix[0]=[];
-		matrix[1]=[];
-		matrix[2]=[];
-	}
-	for(var i=0; i<obj.length;i++) {
-    	matrix[0][i] = obj[i].x;
-    	matrix[1][i] = obj[i].y;
-    	matrix[2][i] = obj[i].z;
-    }
-    return matrix;
-}
-var matrix2Coord = function(matrix){
-	var coords = [];
-	for(var i=0; i<matrix.length;i++) {
-		coords.push(new Coord(matrix[0][i],matrix[1][i],matrix[2][i]));
-    }
-    return coords;
-}
-var mul_matrix = function(matrix1, matrix2){
-    var matrix_result = [];
-    for(var i=0; i<matrix1.length;i++) {
-        matrix_result[i] = [];
-        for (var j=0;j<matrix2[0].length;j++) {
-            var sum = 0;
-            for(var k=0;k<matrix1[0].length;k++) {
-                sum+= matrix1[i][k] * matrix2[k][j];
-            }
-            matrix_result[i][j] = sum;
-        }
-    }
-    return matrix_result;
-}
-var translation = function(obj_list,value){
-	obj_list.map(function(obj){
-		var matrix = coord2Matrix(obj.matrix);
-		log(obj);
-		log(matrix);
-		obj.matrix = mul_matrix(MATRIX.translation(value),matrix);
-		obj.coord = matrix2Coord(obj.matrix);
-		return obj;
-	});
-	return fixY(obj_list);
-};
 
-var fixY = function(obj_list,heightY){
-	heightY = heightY || 550;
-	log(obj_list);
-	obj_list.map(function(obj){
-		obj.matrix.map(function(el){
-			return el.map(function(coord){
-				coord.y = heightY - coord.y; 
-				return coord;
-			});
-		});
-	});
-	return obj_list;
-}
-
-var obj2Matrix = function(obj_list){
-	var matriz=[];
-	var cur_obj; 
-	for(var i=0;i<obj_list.length;i++){
-		cur_obj=obj_list[i];
-		matriz[cur_obj.id] = [];
-		for(var j=0;j<cur_obj.coord.length;j++){
-			matriz[cur_obj.id][j] = cur_obj.coord[j];
-		}
-		log('matrixxx');
-		log(matrix);
-		obj_list[i].matrix= matriz;
-	}
-	log('back');
-	log(obj_list);
-	return obj_list;
-}
-var getMatrix = function(OBJ){
-
-}
 
 $('#translacao').on('click',function(){
 	panel.clear();
@@ -575,17 +753,48 @@ $('#translacao').on('click',function(){
 	
 	panel.write("Digite o valor da transformação de XXXX no <span class='destaque'>formato X,Y</span>, e em seguida pressione Enter");
 	BUFFER.setEnterEvent(function(val){
-		var value = getInputXY(val);
-		log('val');log(value);
+		var value = TRANSFORM.getInputXY(val);
 		var actives = OBJECT_LIST.getActives(ids);
-		log('actives');log(actives);
-		var matrix_list = fixY(obj2Matrix(actives));
-		log('matrix_list');log(matrix_list);
-		var transformed = translation(matrix_list,value);
-		log('transformed');log(transformed);
-		OBJECT_LIST.update(transformed);
+		TRANSFORM.translate(actives,value);
+		OBJECT_LIST.render();
 
 	});
 });
+$('#escala').on('click',function(){
+	panel.clear();
+	resetCanvas();
+	var ids = TABLE.getSelecteds();
+	if(ids.length==0){
+		panel.write("Você precisa selecionar ao menos um elemento para realizar a transformação");
+		return false;
+	}
+	
+	panel.write("Digite o valor da transformação de XXXX no <span class='destaque'>formato X,Y</span>, e em seguida pressione Enter");
+	BUFFER.setEnterEvent(function(val){
+		var value = TRANSFORM.getInputXY(val);
+		var actives = OBJECT_LIST.getActives(ids);
+		TRANSFORM.scale(actives,value);
+		OBJECT_LIST.render();
+
+	});
+});
+$('#rotacionar').on('click',function(){
+	panel.clear();
+	resetCanvas();
+	var ids = TABLE.getSelecteds();
+	if(ids.length==0){ 
+		panel.write("Você precisa selecionar ao menos um elemento para realizar a transformação");
+		return false;
+	}
+	
+	panel.write("Digite o valor da transformação de XXXX no <span class='destaque'>formato X</span>, e em seguida pressione Enter");
+	BUFFER.setEnterEvent(function(val){
+		var actives = OBJECT_LIST.getActives(ids);
+		TRANSFORM.rotate(actives,val);
+		OBJECT_LIST.render();
+
+	});
+});
+
 
 /*GROMETRIC TRANSFORM*/

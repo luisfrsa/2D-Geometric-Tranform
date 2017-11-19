@@ -7,11 +7,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 	<script src="https://use.fontawesome.com/f6c37f8c46.js"></script>
-<!--	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
--->
 </head>
 <body>
 	<div id='center_canvas'>
@@ -20,10 +15,6 @@
 			<div id='coord'>
 				<div class='mouse_pos'>Pos.x =><span id='current_pos_x'></span><br/>Pos.y =><span id='current_pos_y'></span>
 				</div>
-				<!--<div class='mouse_pos'>
-					Pos.x => <span id='last_pos_x'></span> <br/>
-				    Pos.y => <span id='last_pos_y'></span> 
-				</div>-->
 			</div>
 		</div>
 		<div id="panel">
@@ -44,6 +35,10 @@
 				<li id='retangulo'>
 					<i class="fa fa-square-o" aria-hidden="true"></i><br/>
 					Retângulo
+				</li>
+				<li id='poligono'>
+					<i class="fa fa-certificate" aria-hidden="true"></i><br/>
+					Polígono
 				</li>
 				<li id='circunferencia'>
 					<i class="fa fa-circle-o" aria-hidden="true"></i><br/>
@@ -66,13 +61,10 @@
 					<i class="fa fa-arrows" aria-hidden="true"></i><br/>
 					Translação
 				</li>
-				<!--<li id='zoom_in'>
-					<i class="fa fa-search-plus" aria-hidden="true"></i><br/>
-					Zoom +
-				</li>-->
-				<li id='zoon_out'>
+				
+				<li id='zoom_out'>
 					<i class="fa fa-search-minus" aria-hidden="true"></i><br/>
-					Zoom -
+					Zoom
 				</li>
 				<li id='clear'>
 					<i class="fa fa-paint-brush" aria-hidden="true"></i><br/>
@@ -85,6 +77,7 @@
 		<tbody></tbody>
 	</table>
 	<script>
+		
 		/*
 		Prevent cache without backend
 		*/

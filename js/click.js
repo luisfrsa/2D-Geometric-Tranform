@@ -33,7 +33,7 @@ $('#circunferencia').on('click',function(){
 
 });
 $('#triangulo').on('click',function(){
-	panel.write("Clique em <span class='destaque'>3</span> pontos para desenhar uma <span class='destaque'>triângulo</span>.");
+	panel.write("Clique em <span class='destaque'>3</span> pontos para desenhar um <span class='destaque'>triângulo</span>.");
 	obj = new Object();
 	obj.type='triangle';
 	obj.name='Triângulo';
@@ -41,6 +41,19 @@ $('#triangulo').on('click',function(){
 	obj.done= SHAPE.triangle;
 	obj.clickEventInit();
 
+});
+$('#poligono').on('click',function(){
+	panel.write("Digite o número de pontos do polígono.");
+		BUFFER.setEnterEvent(function(val){
+		val = parseInt(val);
+		panel.write("Clique em <span class='destaque'>"+val+"</span> pontos para desenhar um <span class='destaque'>polígono</span>.");
+		obj = new Object();
+		obj.type='poligono';
+		obj.name='Polígono';
+		obj.waitClick=val;
+		obj.done= SHAPE.poligono;
+		obj.clickEventInit();
+	});
 });
 var blank_canvas = function(){
 	TABLE.clear();
@@ -65,94 +78,7 @@ $('#input').on('keydown',function(e){
     }
 });
 
-var getInputXY = function(str){
-	var split = str.split(',');
-	return {
-		x:parseFloat(split[0]),
-		y:parseFloat(split[1]),
-	}
-}
-var coord2Matrix = function(obj){
-	var matrix = [];
-	for(var i=0; i<obj.length;i++) {
-		matrix[0]=[];
-		matrix[1]=[];
-		matrix[2]=[];
-	}
-	for(var i=0; i<obj.length;i++) {
-    	matrix[0][i] = obj[i].x;
-    	matrix[1][i] = obj[i].y;
-    	matrix[2][i] = obj[i].z;
-    }
-    return matrix;
-}
-var matrix2Coord = function(matrix){
-	var coords = [];
-	for(var i=0; i<matrix.length;i++) {
-		coords.push(new Coord(matrix[0][i],matrix[1][i],matrix[2][i]));
-    }
-    return coords;
-}
-var mul_matrix = function(matrix1, matrix2){
-    var matrix_result = [];
-    for(var i=0; i<matrix1.length;i++) {
-        matrix_result[i] = [];
-        for (var j=0;j<matrix2[0].length;j++) {
-            var sum = 0;
-            for(var k=0;k<matrix1[0].length;k++) {
-                sum+= matrix1[i][k] * matrix2[k][j];
-            }
-            matrix_result[i][j] = sum;
-        }
-    }
-    return matrix_result;
-}
-var translation = function(obj_list,value){
-	obj_list.map(function(obj){
-		var matrix = coord2Matrix(obj.matrix);
-		log(obj);
-		log(matrix);
-		obj.matrix = mul_matrix(MATRIX.translation(value),matrix);
-		obj.coord = matrix2Coord(obj.matrix);
-		return obj;
-	});
-	return fixY(obj_list);
-};
 
-var fixY = function(obj_list,heightY){
-	heightY = heightY || 550;
-	log(obj_list);
-	obj_list.map(function(obj){
-		obj.matrix.map(function(el){
-			return el.map(function(coord){
-				coord.y = heightY - coord.y; 
-				return coord;
-			});
-		});
-	});
-	return obj_list;
-}
-
-var obj2Matrix = function(obj_list){
-	var matriz=[];
-	var cur_obj; 
-	for(var i=0;i<obj_list.length;i++){
-		cur_obj=obj_list[i];
-		matriz[cur_obj.id] = [];
-		for(var j=0;j<cur_obj.coord.length;j++){
-			matriz[cur_obj.id][j] = cur_obj.coord[j];
-		}
-		log('matrixxx');
-		log(matrix);
-		obj_list[i].matrix= matriz;
-	}
-	log('back');
-	log(obj_list);
-	return obj_list;
-}
-var getMatrix = function(OBJ){
-
-}
 
 $('#translacao').on('click',function(){
 	panel.clear();
@@ -165,17 +91,48 @@ $('#translacao').on('click',function(){
 	
 	panel.write("Digite o valor da transformação de XXXX no <span class='destaque'>formato X,Y</span>, e em seguida pressione Enter");
 	BUFFER.setEnterEvent(function(val){
-		var value = getInputXY(val);
-		log('val');log(value);
+		var value = TRANSFORM.getInputXY(val);
 		var actives = OBJECT_LIST.getActives(ids);
-		log('actives');log(actives);
-		var matrix_list = fixY(obj2Matrix(actives));
-		log('matrix_list');log(matrix_list);
-		var transformed = translation(matrix_list,value);
-		log('transformed');log(transformed);
-		OBJECT_LIST.update(transformed);
+		TRANSFORM.translate(actives,value);
+		OBJECT_LIST.render();
 
 	});
 });
+$('#escala').on('click',function(){
+	panel.clear();
+	resetCanvas();
+	var ids = TABLE.getSelecteds();
+	if(ids.length==0){
+		panel.write("Você precisa selecionar ao menos um elemento para realizar a transformação");
+		return false;
+	}
+	
+	panel.write("Digite o valor da transformação de XXXX no <span class='destaque'>formato X,Y</span>, e em seguida pressione Enter");
+	BUFFER.setEnterEvent(function(val){
+		var value = TRANSFORM.getInputXY(val);
+		var actives = OBJECT_LIST.getActives(ids);
+		TRANSFORM.scale(actives,value);
+		OBJECT_LIST.render();
+
+	});
+});
+$('#rotacionar').on('click',function(){
+	panel.clear();
+	resetCanvas();
+	var ids = TABLE.getSelecteds();
+	if(ids.length==0){ 
+		panel.write("Você precisa selecionar ao menos um elemento para realizar a transformação");
+		return false;
+	}
+	
+	panel.write("Digite o valor da transformação de XXXX no <span class='destaque'>formato X</span>, e em seguida pressione Enter");
+	BUFFER.setEnterEvent(function(val){
+		var actives = OBJECT_LIST.getActives(ids);
+		TRANSFORM.rotate(actives,val);
+		OBJECT_LIST.render();
+
+	});
+});
+
 
 /*GROMETRIC TRANSFORM*/

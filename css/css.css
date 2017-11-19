@@ -25,7 +25,7 @@ table {
   margin: auto;
 }
 
-table td {
+table td, table th {
   padding: 10px 10px;
 }
 
@@ -148,6 +148,10 @@ table .table_selected {
 .fa-square-o {
   font-size: 30px;
   transform: scale(1.2, 1);
+}
+
+.fa-certificate {
+  font-size: 30px;
 }
 
 .fa-circle-o {

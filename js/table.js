@@ -1,10 +1,16 @@
 var Table = function(){
 
-	var clear = function(){
-		$('table>tbody').first().html('<tr><th></th><th>Id</th><th>Objeto</th><th>Coordenada pontos</th></tr>');
+	var clear = function(){ 
+		$('table>tbody').first().html('<tr><th><input type="checkbox" onclick="window.TABLE.check_all(this)"></th><th>Id</th><th>Objeto</th><th>Coordenada pontos</th></tr>');
 	}
-	var updateTabele = function(objs){
-		clear();
+	var check_all = function(el){  
+		$this = $(el);
+		$('table').find('input').each(function(){
+			$(this).prop('checked',$this.prop('checked'));
+		});
+	}
+	var updateTabele = function(objs){ 
+		clear(); 
 		objs.forEach(function(el){
 			var tr = document.createElement("tr");
 			tr.appendChild(createCheckbox(el.id));
@@ -18,10 +24,9 @@ var Table = function(){
 	}
 
 	var createTdCoord= function(coord){
-		var LETRAS = ["A","B","C","D","E","F","G","H"];
 		var str="";
 		for(var i=0;i<coord.length;i++){
-			str+=LETRAS[i]+" ("+(coord[i].x/100)+" , "+(coord[i].y/100)+"); ";
+			str+=LETRAS[i%LETRAS.length]+" ("+(coord[i].x)+" , "+(coord[i].y)+"); ";
 		}
 		return createTd(str);
 	}
@@ -60,6 +65,7 @@ var Table = function(){
 	return {
 		updateTabele:updateTabele,
 		clear:clear,
-		getSelecteds:getSelecteds
+		getSelecteds:getSelecteds,
+		check_all:check_all
 	}
 }

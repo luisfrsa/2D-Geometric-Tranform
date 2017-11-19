@@ -23,7 +23,7 @@ ul{
 table{
 	width:$canvasWSize;
 	margin:auto;
-	td{
+	td,th{
 		padding:10px 10px;
 	}
 }
@@ -134,6 +134,7 @@ table{
 	font-size:30px;
 	transform:scale(1.2,1);
 }
+.fa-certificate{font-size:30px;}
 .fa-circle-o{font-size:30px;}
 .fa-undo{font-size:30px;}
 .fa-arrows-alt{font-size:30px;}
