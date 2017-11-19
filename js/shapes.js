@@ -46,13 +46,13 @@ var SHAPE ={
 		middle = getMiddle(self.coord[0],self.coord[2]);
 		Draw.write(self.name+" - "+self.id,middle);
 	},
-	poligono:function(current){  
+	forma_livre:function(current){  
 		if(typeof(current)!=='undefined'){
 			self = current;
 		}else{
 			self = this;
 		}
-		Draw.poligono(self.coord);
+		Draw.forma_livre(self.coord);
 		middle = getMiddleCoords(self.coord);
 		Draw.write(self.name+" - "+self.id,middle);
 	},

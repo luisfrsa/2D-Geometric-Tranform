@@ -42,17 +42,23 @@ var Table = function(){
 			tr.appendChild(createCheckbox(el.id));
 			tr.appendChild(createTd(el.id));
 			tr.appendChild(createTd(el.name));
-			tr.appendChild(createTdCoord(el.coord));
+			tr.appendChild(createTdCoord(el,el.coord));
 			$('table>tbody').first().append(tr);
 		});
 		$('table').find("input").on('change',clickCheckEvent);
 
 	}
 
-	var createTdCoord= function(coord){
-		var str="";
-		for(var i=0;i<coord.length;i++){
-			str+=LETRAS[i%LETRAS.length]+" ("+(coord[i].x)+" , "+(coord[i].y)+"); ";
+	var createTdCoord= function(el,coord){
+			var str="";
+		if(el.type!='rectangle'){
+			for(var i=0;i<coord.length;i++){
+				str+=LETRAS[i%LETRAS.length]+" ("+parseInt(coord[i].x)+" , "+parseInt(coord[i].y)+"); ";
+			}
+		}else{
+			for(var i=0;i<4;i++){
+				str+=LETRAS[i%LETRAS.length]+" ("+parseInt(coord[i].x)+" , "+parseInt(coord[i].y)+"); ";
+			}
 		}
 		return createTd(str);
 	}
@@ -153,14 +159,13 @@ var transform = function(){
 						coords[j].z = matrix[i][j];
 					break;
 				}
-				//log('coords [j='+j+'].'+curren+'=matrix [i='+i+'][j='+j+']='+matrix[i][j]);
 		    }
 	    }
 	    return coords;
 	}
 
 	var mul_matrix = function(matrix1, matrix2){
-		log(arguments); 
+		//log(arguments); 
 	    var matrix_result = [];
 	    for(var i=0; i<matrix1.length;i++) {
 	        matrix_result[i] = [];
@@ -224,12 +229,8 @@ var transform = function(){
 
 	var translation = function(obj,value){
 		obj.matrix = mul_matrix(MATRIX.translation(value),obj.matrix);
-		var coord = matrix2Coord(obj.matrix);
-		obj.coord=null;
-		obj.coord = coord;
-		log('translation coord');
-		log(coord);
-		log(obj.coord);
+		obj.coord = matrix2Coord(obj.matrix);
+		
 		return obj;
 	}; 
 	var skew = function(obj,value){    
@@ -256,6 +257,7 @@ var transform = function(){
 			case "triangle":
 			case "line":
 			case "rectangle":
+			case "forma_livre":
 				middle = getMiddleCoords(obj.coord);
 			break;
 			case "circle":
@@ -311,27 +313,53 @@ var transform = function(){
 		rotate:rotate,
 	}
 }
+
+var transformation = function(){
+	self = this;
+	this.name='';
+	this.type='';
+	this.format='formato X,Y';
+	this.transoform_function='';
+	var init = function(ids){
+		panel.clear();
+		resetCanvas();
+		if(ids.length==0){
+			panel.write("Você precisa selecionar ao menos um elemento para realizar a transformação");
+			return false;
+		}
+		return true
+	}
+	this.run = function(){
+		var ids = TABLE.getSelecteds();
+		if(!init(ids)){
+			return false;
+		}
+		panel.write("Digite o valor da transformação de "+self.type+" no <span class='destaque'>"+self.format+"</span>, e em seguida pressione Enter");
+		BUFFER.setEnterEvent(function(val){
+			var value = TRANSFORM.getInputXY(val);
+			var actives = OBJECT_LIST.getActives(ids);
+			self.transoform_function(actives,value);
+			OBJECT_LIST.render();
+			BUFFER.clearEnterEvent();
+		});
+	}
+}
 /******GLOBAL*******/
 var WaitClick=0;
 var WaitCoord = [];
 var LETRAS = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
-
 var $canvas = $('#canvas');
 var ctx = canvas.getContext("2d");
 var CORP='#3B40E6';
-
-
 var LAST_ID=0;
-
 var OBJECT_LIST = [];
-
 var TABLE =  Table();
 var TRANSFORM = transform();
 var BUFFER = Buffer();
-
-
-
+var ZOOM = false;
+var BACKUP_OBJSlIST;
 /******GLOBAL*******/
+/******BUFFER PROTOTYPE*******/
 
 Array.prototype.add = function(el){
 	this.push(el);
@@ -362,10 +390,11 @@ Array.prototype.getActives = function(arrIds){
 	});
 	return arrReturn;
 }
-/*
-not used
-*/
+
 Array.prototype.update=function(new_objs){
+	/*
+	not used
+	*/
 	self = this;
 	new_objs.forEach(function(new_obj){
 		self.removeById(new_obj.id);
@@ -389,13 +418,15 @@ Array.prototype.render=function(){
 			case 'rectangle':
 				SHAPE.rectangle(obj);
 			break;
-			case 'poligono':
-				SHAPE.poligono(obj);
+			case 'forma_livre':
+				SHAPE.forma_livre(obj);
 			break;
 		} 
 	});
 	TABLE.updateTabele(this);
 };
+/******BUFFER PROTOTYPE*******/
+
 var SHAPE ={
 	triangle:function(current){ 
 		if(typeof(current)!=='undefined'){
@@ -444,13 +475,13 @@ var SHAPE ={
 		middle = getMiddle(self.coord[0],self.coord[2]);
 		Draw.write(self.name+" - "+self.id,middle);
 	},
-	poligono:function(current){  
+	forma_livre:function(current){  
 		if(typeof(current)!=='undefined'){
 			self = current;
 		}else{
 			self = this;
 		}
-		Draw.poligono(self.coord);
+		Draw.forma_livre(self.coord);
 		middle = getMiddleCoords(self.coord);
 		Draw.write(self.name+" - "+self.id,middle);
 	},
@@ -559,8 +590,9 @@ var Draw = {
 		ctx.stroke(); 
 		ctx.closePath();
 
-		Draw.coords(coord);
-
+		for(var i=0;i<4;i++){
+			Draw.write(LETRAS[i%LETRAS.length],{x:(coord[i].x-10),y:(coord[i].y-10)});
+		}
 	},
 	circle:function(coord){
 		var from = coord[0];
@@ -588,7 +620,7 @@ var Draw = {
 		Draw.coords(coord);
 
 	},
-	poligono:function(coord){
+	forma_livre:function(coord){
 		var A = coord[0];
 		var B = coord[1];
 		var C = coord[2];
@@ -704,16 +736,16 @@ $('#triangulo').on('click',function(){
 	obj.clickEventInit();
 
 });
-$('#poligono').on('click',function(){
+$('#forma_livre').on('click',function(){
 	panel.write("Digite o número de pontos do polígono.");
 		BUFFER.setEnterEvent(function(val){
 		val = parseInt(val);
 		panel.write("Clique em <span class='destaque'>"+val+"</span> pontos para desenhar um <span class='destaque'>polígono</span>.");
 		obj = new Object();
-		obj.type='poligono';
+		obj.type='forma_livre';
 		obj.name='Polígono';
 		obj.waitClick=val;
-		obj.done= SHAPE.poligono;
+		obj.done= SHAPE.forma_livre;
 		obj.clickEventInit();
 	});
 });
@@ -743,41 +775,22 @@ $('#input').on('keydown',function(e){
 
 
 $('#translacao').on('click',function(){
-	panel.clear();
-	resetCanvas();
-	var ids = TABLE.getSelecteds();
-	if(ids.length==0){
-		panel.write("Você precisa selecionar ao menos um elemento para realizar a transformação");
-		return false;
-	}
-	
-	panel.write("Digite o valor da transformação de XXXX no <span class='destaque'>formato X,Y</span>, e em seguida pressione Enter");
-	BUFFER.setEnterEvent(function(val){
-		var value = TRANSFORM.getInputXY(val);
-		var actives = OBJECT_LIST.getActives(ids);
-		TRANSFORM.translate(actives,value);
-		OBJECT_LIST.render();
-
-	});
+	var transform = new transformation();
+	transform.name='Translação';
+	transform.type='translacao';
+	transform.format='formato X,Y';
+	transform.transoform_function=TRANSFORM.translate;
+	transform.run();
 });
 $('#escala').on('click',function(){
-	panel.clear();
-	resetCanvas();
-	var ids = TABLE.getSelecteds();
-	if(ids.length==0){
-		panel.write("Você precisa selecionar ao menos um elemento para realizar a transformação");
-		return false;
-	}
-	
-	panel.write("Digite o valor da transformação de XXXX no <span class='destaque'>formato X,Y</span>, e em seguida pressione Enter");
-	BUFFER.setEnterEvent(function(val){
-		var value = TRANSFORM.getInputXY(val);
-		var actives = OBJECT_LIST.getActives(ids);
-		TRANSFORM.scale(actives,value);
-		OBJECT_LIST.render();
-
-	});
+	var transform = new transformation();
+	transform.name='Mudança de escala';
+	transform.type='scale';
+	transform.format='formato X,Y';
+	transform.transoform_function=TRANSFORM.scale;
+	transform.run();
 });
+
 $('#rotacionar').on('click',function(){
 	panel.clear();
 	resetCanvas();
@@ -787,14 +800,82 @@ $('#rotacionar').on('click',function(){
 		return false;
 	}
 	
-	panel.write("Digite o valor da transformação de XXXX no <span class='destaque'>formato X</span>, e em seguida pressione Enter");
+	panel.write("Digite o valor da transformação de Rotação no <span class='destaque'>formato X</span>, e em seguida pressione Enter");
 	BUFFER.setEnterEvent(function(val){
 		var actives = OBJECT_LIST.getActives(ids);
 		TRANSFORM.rotate(actives,val);
 		OBJECT_LIST.render();
+		BUFFER.clearEnterEvent();
 
 	});
 });
+$('#zoom').on('click',function(){
+	if(ZOOM===false){
+	}else{
+	}
+	ZOOM = !ZOOM;
 
+	panel.clear();
+	resetCanvas();
+	var ids = TABLE.getSelecteds();
+	if(ids.length==0){ 
+		panel.write("Você precisa selecionar um elemento para realizar a função zoom. Será realizado zoom apenas <span class='destaque'>no primeiro</span> elemento selecionado.");
+		return false;
+	}
+	var active_obj = OBJECT_LIST.getActives(ids)[0];
+	//BACKUP_OBJSlIST =OBJECT_LIST.assign({}, OBJECT_LIST);
+	BACKUP_OBJSlIST = JSON.parse(JSON.stringify(OBJECT_LIST));
+
+	var $canvasWidth = $canvas.width();
+	var $canvasHeight = $canvas.height();
+	
+	var middle;
+	switch(active_obj.type){
+			case "triangle":
+			case "line":
+			case "rectangle":
+			case "forma_livre":
+				middle = getMiddleCoords(active_obj.coord);
+			break;
+			case "circle":
+				middle = active_obj.coord[0];
+			break;
+	}	
+	var canvasMiddle = new Coord(parseInt(($canvasWidth/2)-middle.x),-parseInt(($canvasHeight/2)-middle.y));
+	TRANSFORM.translate(OBJECT_LIST,canvasMiddle);
+
+
+	var menorX = Number.MAX_SAFE_INTEGER;
+	var menorY = Number.MAX_SAFE_INTEGER;
+	active_obj.coord.forEach(function(el){
+		if(($canvasWidth - el.x)<menorX){
+			menorX = el;
+		}
+		if(($canvasHeight - el.y)<menorY){
+			menorY = el;
+		}
+	});
+	var skewRatio;
+
+	log(menorX);
+	log(menorY);
+
+	if($canvasWidth/menorX.x > $canvasHeight/menorY.y){
+		skewRatio = ($canvasWidth-menorX.x)/menorX.x;
+	}else{
+		skewRatio =($canvasHeight-menorY.y)/menorY.y;
+	}
+	//caderno
+	log(skewRatio);
+	TRANSFORM.scale(OBJECT_LIST,new Coord(skewRatio,skewRatio));
+
+	OBJECT_LIST.render();
+
+	setTimeout(function(){
+		OBJECT_LIST = JSON.parse(JSON.stringify(BACKUP_OBJSlIST));
+		//TRANSFORM.translate(OBJECT_LIST,canvasMiddle);
+		OBJECT_LIST.render();
+	},200000);
+});
 
 /*GROMETRIC TRANSFORM*/

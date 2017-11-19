@@ -2,23 +2,18 @@
 var WaitClick=0;
 var WaitCoord = [];
 var LETRAS = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
-
 var $canvas = $('#canvas');
 var ctx = canvas.getContext("2d");
 var CORP='#3B40E6';
-
-
 var LAST_ID=0;
-
 var OBJECT_LIST = [];
-
 var TABLE =  Table();
 var TRANSFORM = transform();
 var BUFFER = Buffer();
-
-
-
+var ZOOM = false;
+var BACKUP_OBJSlIST;
 /******GLOBAL*******/
+/******BUFFER PROTOTYPE*******/
 
 Array.prototype.add = function(el){
 	this.push(el);
@@ -49,10 +44,11 @@ Array.prototype.getActives = function(arrIds){
 	});
 	return arrReturn;
 }
-/*
-not used
-*/
+
 Array.prototype.update=function(new_objs){
+	/*
+	not used
+	*/
 	self = this;
 	new_objs.forEach(function(new_obj){
 		self.removeById(new_obj.id);
@@ -76,10 +72,11 @@ Array.prototype.render=function(){
 			case 'rectangle':
 				SHAPE.rectangle(obj);
 			break;
-			case 'poligono':
-				SHAPE.poligono(obj);
+			case 'forma_livre':
+				SHAPE.forma_livre(obj);
 			break;
 		} 
 	});
 	TABLE.updateTabele(this);
 };
+/******BUFFER PROTOTYPE*******/

@@ -39,7 +39,7 @@ table .table_selected {
 }
 
 #center_canvas {
-  padding-top: 50px;
+  padding-top: 10px;
   margin: auto;
   width: 1100px;
 }
@@ -48,7 +48,7 @@ table .table_selected {
   cursor: crosshair;
   float: left;
   background: #fff;
-  border: solid 1px #000;
+  border: solid 1px gray;
   width: 1100px;
   height: 550px;
 }
@@ -56,18 +56,26 @@ table .table_selected {
 #center_canvas #shapes, #center_canvas #transform {
   margin-top: 15px;
   float: left;
-  width: 100%;
+  width: 50%;
 }
 
 #center_canvas #shapes li, #center_canvas #transform li {
   cursor: pointer;
   text-align: center;
   width: 100%;
-  max-width: 120px;
+  max-width: 100px;
 }
 
 #center_canvas #shapes i, #center_canvas #transform i {
   color: #2a47ea;
+}
+
+#center_canvas #transform li {
+  float: right;
+}
+
+#center_canvas #transform li i {
+  color: #16bf35;
 }
 
 #center_canvas #coord {
@@ -94,12 +102,12 @@ table .table_selected {
 }
 
 #panel {
-  box-shadow: 0 0 1px red;
+  box-shadow: 0 0 1px gray;
   padding: 15px 2%;
   float: left;
   width: 100%;
   margin-top: 15px;
-  max-height: 200px;
+  max-height: 150px;
   position: relative;
   overflow-y: scroll;
 }
@@ -195,4 +203,20 @@ table .table_selected {
 .user_console {
   color: #831eaa;
   font-weight: bold;
+}
+
+#zoom .fa-search-minus {
+  display: none;
+}
+
+#zoom .fa-search-plus {
+  display: inline;
+}
+
+#zoom.active .fa-search-minus {
+  display: inline;
+}
+
+#zoom.active .fa-search-plus {
+  display: none;
 }

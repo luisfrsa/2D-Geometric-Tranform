@@ -53,8 +53,9 @@ var Draw = {
 		ctx.stroke(); 
 		ctx.closePath();
 
-		Draw.coords(coord);
-
+		for(var i=0;i<4;i++){
+			Draw.write(LETRAS[i%LETRAS.length],{x:(coord[i].x-10),y:(coord[i].y-10)});
+		}
 	},
 	circle:function(coord){
 		var from = coord[0];
@@ -82,7 +83,7 @@ var Draw = {
 		Draw.coords(coord);
 
 	},
-	poligono:function(coord){
+	forma_livre:function(coord){
 		var A = coord[0];
 		var B = coord[1];
 		var C = coord[2];

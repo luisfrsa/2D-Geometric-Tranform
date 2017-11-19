@@ -37,29 +37,35 @@ table{
 	}
 }
 #center_canvas{
-	padding-top:50px;
+	padding-top:10px;
 	margin:auto;
 	width:$canvasWSize;
 	canvas{
 		cursor:crosshair;
 		float:left;
 		background:#fff;
-		border:solid 1px #000;
+		border:solid 1px gray;
 		width:$canvasWSize;
 		height:$canvasHSize;	
 	}
 	#shapes,#transform{
 		margin-top:15px;
 		float:left;
-		width:100%;		
+		width:50%;		
 		li{
 			cursor:pointer;
 			text-align:center;
 			width:100%;
-			max-width:120px;
+			max-width:100px;
 		}
 		i{
 			color:#2a47ea;
+		}
+	}
+	#transform li{
+		float: right;
+		i{
+			color:#16bf35;
 		}
 	}
 	#coord{	
@@ -85,12 +91,12 @@ table{
 
 
 #panel{
-	box-shadow: 0 0 1px red;
+	box-shadow: 0 0 1px gray;
 	padding:15px 2%;
 	float:left;
 	width:100%;
 	margin-top:15px;
-	max-height:200px;
+	max-height:150px;
 	position:relative;
 	overflow-y: scroll;
 	ul{
@@ -154,4 +160,21 @@ table{
 .user_console{
 	color:#831eaa;
 	font-weight: bold;
+}
+
+#zoom{
+	.fa-search-minus{
+		display: none;
+	}
+	.fa-search-plus{
+		display: inline;
+	}
+	&.active{
+		.fa-search-minus{
+			display: inline;
+		}
+		.fa-search-plus{
+			display: none;
+		}
+	}
 }

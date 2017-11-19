@@ -16,17 +16,23 @@ var Table = function(){
 			tr.appendChild(createCheckbox(el.id));
 			tr.appendChild(createTd(el.id));
 			tr.appendChild(createTd(el.name));
-			tr.appendChild(createTdCoord(el.coord));
+			tr.appendChild(createTdCoord(el,el.coord));
 			$('table>tbody').first().append(tr);
 		});
 		$('table').find("input").on('change',clickCheckEvent);
 
 	}
 
-	var createTdCoord= function(coord){
-		var str="";
-		for(var i=0;i<coord.length;i++){
-			str+=LETRAS[i%LETRAS.length]+" ("+(coord[i].x)+" , "+(coord[i].y)+"); ";
+	var createTdCoord= function(el,coord){
+			var str="";
+		if(el.type!='rectangle'){
+			for(var i=0;i<coord.length;i++){
+				str+=LETRAS[i%LETRAS.length]+" ("+parseInt(coord[i].x)+" , "+parseInt(coord[i].y)+"); ";
+			}
+		}else{
+			for(var i=0;i<4;i++){
+				str+=LETRAS[i%LETRAS.length]+" ("+parseInt(coord[i].x)+" , "+parseInt(coord[i].y)+"); ";
+			}
 		}
 		return createTd(str);
 	}

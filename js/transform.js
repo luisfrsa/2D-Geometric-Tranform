@@ -21,14 +21,13 @@ var transform = function(){
 						coords[j].z = matrix[i][j];
 					break;
 				}
-				//log('coords [j='+j+'].'+curren+'=matrix [i='+i+'][j='+j+']='+matrix[i][j]);
 		    }
 	    }
 	    return coords;
 	}
 
 	var mul_matrix = function(matrix1, matrix2){
-		log(arguments); 
+		//log(arguments); 
 	    var matrix_result = [];
 	    for(var i=0; i<matrix1.length;i++) {
 	        matrix_result[i] = [];
@@ -92,12 +91,8 @@ var transform = function(){
 
 	var translation = function(obj,value){
 		obj.matrix = mul_matrix(MATRIX.translation(value),obj.matrix);
-		var coord = matrix2Coord(obj.matrix);
-		obj.coord=null;
-		obj.coord = coord;
-		log('translation coord');
-		log(coord);
-		log(obj.coord);
+		obj.coord = matrix2Coord(obj.matrix);
+		
 		return obj;
 	}; 
 	var skew = function(obj,value){    
@@ -124,6 +119,7 @@ var transform = function(){
 			case "triangle":
 			case "line":
 			case "rectangle":
+			case "forma_livre":
 				middle = getMiddleCoords(obj.coord);
 			break;
 			case "circle":
@@ -177,5 +173,36 @@ var transform = function(){
 		translate:translate,
 		scale:scale,
 		rotate:rotate,
+	}
+}
+
+var transformation = function(){
+	self = this;
+	this.name='';
+	this.type='';
+	this.format='formato X,Y';
+	this.transoform_function='';
+	var init = function(ids){
+		panel.clear();
+		resetCanvas();
+		if(ids.length==0){
+			panel.write("Você precisa selecionar ao menos um elemento para realizar a transformação");
+			return false;
+		}
+		return true
+	}
+	this.run = function(){
+		var ids = TABLE.getSelecteds();
+		if(!init(ids)){
+			return false;
+		}
+		panel.write("Digite o valor da transformação de "+self.type+" no <span class='destaque'>"+self.format+"</span>, e em seguida pressione Enter");
+		BUFFER.setEnterEvent(function(val){
+			var value = TRANSFORM.getInputXY(val);
+			var actives = OBJECT_LIST.getActives(ids);
+			self.transoform_function(actives,value);
+			OBJECT_LIST.render();
+			BUFFER.clearEnterEvent();
+		});
 	}
 }

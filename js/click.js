@@ -42,16 +42,16 @@ $('#triangulo').on('click',function(){
 	obj.clickEventInit();
 
 });
-$('#poligono').on('click',function(){
+$('#forma_livre').on('click',function(){
 	panel.write("Digite o número de pontos do polígono.");
 		BUFFER.setEnterEvent(function(val){
 		val = parseInt(val);
 		panel.write("Clique em <span class='destaque'>"+val+"</span> pontos para desenhar um <span class='destaque'>polígono</span>.");
 		obj = new Object();
-		obj.type='poligono';
+		obj.type='forma_livre';
 		obj.name='Polígono';
 		obj.waitClick=val;
-		obj.done= SHAPE.poligono;
+		obj.done= SHAPE.forma_livre;
 		obj.clickEventInit();
 	});
 });
@@ -81,41 +81,22 @@ $('#input').on('keydown',function(e){
 
 
 $('#translacao').on('click',function(){
-	panel.clear();
-	resetCanvas();
-	var ids = TABLE.getSelecteds();
-	if(ids.length==0){
-		panel.write("Você precisa selecionar ao menos um elemento para realizar a transformação");
-		return false;
-	}
-	
-	panel.write("Digite o valor da transformação de XXXX no <span class='destaque'>formato X,Y</span>, e em seguida pressione Enter");
-	BUFFER.setEnterEvent(function(val){
-		var value = TRANSFORM.getInputXY(val);
-		var actives = OBJECT_LIST.getActives(ids);
-		TRANSFORM.translate(actives,value);
-		OBJECT_LIST.render();
-
-	});
+	var transform = new transformation();
+	transform.name='Translação';
+	transform.type='translacao';
+	transform.format='formato X,Y';
+	transform.transoform_function=TRANSFORM.translate;
+	transform.run();
 });
 $('#escala').on('click',function(){
-	panel.clear();
-	resetCanvas();
-	var ids = TABLE.getSelecteds();
-	if(ids.length==0){
-		panel.write("Você precisa selecionar ao menos um elemento para realizar a transformação");
-		return false;
-	}
-	
-	panel.write("Digite o valor da transformação de XXXX no <span class='destaque'>formato X,Y</span>, e em seguida pressione Enter");
-	BUFFER.setEnterEvent(function(val){
-		var value = TRANSFORM.getInputXY(val);
-		var actives = OBJECT_LIST.getActives(ids);
-		TRANSFORM.scale(actives,value);
-		OBJECT_LIST.render();
-
-	});
+	var transform = new transformation();
+	transform.name='Mudança de escala';
+	transform.type='scale';
+	transform.format='formato X,Y';
+	transform.transoform_function=TRANSFORM.scale;
+	transform.run();
 });
+
 $('#rotacionar').on('click',function(){
 	panel.clear();
 	resetCanvas();
@@ -125,14 +106,82 @@ $('#rotacionar').on('click',function(){
 		return false;
 	}
 	
-	panel.write("Digite o valor da transformação de XXXX no <span class='destaque'>formato X</span>, e em seguida pressione Enter");
+	panel.write("Digite o valor da transformação de Rotação no <span class='destaque'>formato X</span>, e em seguida pressione Enter");
 	BUFFER.setEnterEvent(function(val){
 		var actives = OBJECT_LIST.getActives(ids);
 		TRANSFORM.rotate(actives,val);
 		OBJECT_LIST.render();
+		BUFFER.clearEnterEvent();
 
 	});
 });
+$('#zoom').on('click',function(){
+	if(ZOOM===false){
+	}else{
+	}
+	ZOOM = !ZOOM;
 
+	panel.clear();
+	resetCanvas();
+	var ids = TABLE.getSelecteds();
+	if(ids.length==0){ 
+		panel.write("Você precisa selecionar um elemento para realizar a função zoom. Será realizado zoom apenas <span class='destaque'>no primeiro</span> elemento selecionado.");
+		return false;
+	}
+	var active_obj = OBJECT_LIST.getActives(ids)[0];
+	//BACKUP_OBJSlIST =OBJECT_LIST.assign({}, OBJECT_LIST);
+	BACKUP_OBJSlIST = JSON.parse(JSON.stringify(OBJECT_LIST));
+
+	var $canvasWidth = $canvas.width();
+	var $canvasHeight = $canvas.height();
+	
+	var middle;
+	switch(active_obj.type){
+			case "triangle":
+			case "line":
+			case "rectangle":
+			case "forma_livre":
+				middle = getMiddleCoords(active_obj.coord);
+			break;
+			case "circle":
+				middle = active_obj.coord[0];
+			break;
+	}	
+	var canvasMiddle = new Coord(parseInt(($canvasWidth/2)-middle.x),-parseInt(($canvasHeight/2)-middle.y));
+	TRANSFORM.translate(OBJECT_LIST,canvasMiddle);
+
+
+	var menorX = Number.MAX_SAFE_INTEGER;
+	var menorY = Number.MAX_SAFE_INTEGER;
+	active_obj.coord.forEach(function(el){
+		if(($canvasWidth - el.x)<menorX){
+			menorX = el;
+		}
+		if(($canvasHeight - el.y)<menorY){
+			menorY = el;
+		}
+	});
+	var skewRatio;
+
+	log(menorX);
+	log(menorY);
+
+	if($canvasWidth/menorX.x > $canvasHeight/menorY.y){
+		skewRatio = ($canvasWidth-menorX.x)/menorX.x;
+	}else{
+		skewRatio =($canvasHeight-menorY.y)/menorY.y;
+	}
+	//caderno
+	log(skewRatio);
+	TRANSFORM.scale(OBJECT_LIST,new Coord(skewRatio,skewRatio));
+
+	OBJECT_LIST.render();
+
+	setTimeout(function(){
+		OBJECT_LIST = JSON.parse(JSON.stringify(BACKUP_OBJSlIST));
+		//TRANSFORM.translate(OBJECT_LIST,canvasMiddle);
+		OBJECT_LIST.render();
+	},200000);
+});
 
 /*GROMETRIC TRANSFORM*/
