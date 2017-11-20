@@ -7,10 +7,13 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 	<script src="https://use.fontawesome.com/f6c37f8c46.js"></script>
+	<link rel="icon" href="ico.ico" type="image/x-icon"/>
 </head>
 <body>
 	<div id='center_canvas'>
 		<div id="canvas_block">
+			<div id='center_x'></div>
+			<div id='center_y'></div>
 			<canvas id="canvas" width="1100" height="550"></canvas>
 			<div id='coord'>
 				<div class='mouse_pos'>Pos.x =><span id='current_pos_x'></span><br/>Pos.y =><span id='current_pos_y'></span>
@@ -20,8 +23,7 @@
 		<div id="panel">
 			<ul></ul>
 			<input type="text" id="input" value='100,150'>
-		</div>
-		
+		</div>		
 		<div id='shapes'>
 			<ul>
 				<li id='linha'>
@@ -77,7 +79,6 @@
 		<tbody></tbody>
 	</table>
 	<script>
-		
 		/*
 		Prevent cache without backend
 		*/

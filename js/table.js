@@ -1,7 +1,7 @@
 var Table = function(){
 
 	var clear = function(){ 
-		$('table>tbody').first().html('<tr><th><input type="checkbox" onclick="window.TABLE.check_all(this)"></th><th>Id</th><th>Objeto</th><th>Coordenada pontos</th></tr>');
+		$('table>tbody').first().html('<tr><th><input type="checkbox" value="-1" onclick="window.TABLE.check_all(this)"></th><th>Id</th><th>Objeto</th><th>Coordenada pontos</th></tr>');
 	}
 	var check_all = function(el){  
 		$this = $(el);

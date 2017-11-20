@@ -178,3 +178,18 @@ table{
 		}
 	}
 }
+#center_x,#center_y{
+	position:absolute;
+}
+#center_x{
+	left:50%;
+	background:#efefef;
+	height:550px;
+	width:1px;
+}
+#center_y{
+	top:50%;
+	width:1100px;
+	height:1px;
+	background:#efefef;
+}

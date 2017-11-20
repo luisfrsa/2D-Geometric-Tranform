@@ -44,7 +44,7 @@ $('#triangulo').on('click',function(){
 });
 $('#forma_livre').on('click',function(){
 	panel.write("Digite o número de pontos do polígono.");
-		BUFFER.setEnterEvent(function(val){
+	BUFFER.setEnterEvent(function(val){
 		val = parseInt(val);
 		panel.write("Clique em <span class='destaque'>"+val+"</span> pontos para desenhar um <span class='destaque'>polígono</span>.");
 		obj = new Object();
@@ -57,25 +57,26 @@ $('#forma_livre').on('click',function(){
 });
 var blank_canvas = function(){
 	TABLE.clear();
-	ctx.clearRect(0, 0, $canvas.width(), $canvas.height());
+	ctx.clearRect(0, 0, $canvas.width()+10, $canvas.height()+10);
 }
 $('#clear').on('click',function(){
 	resetCanvas();
 	OBJECT_LIST = [];
 	blank_canvas();
-	
+	panel.write("Canvas limpa com sucesso.");
+
 });
 /*CONTROLS*/
 
 /*GROMETRIC TRANSFORM*/
 $('#input').on('keydown',function(e){
-    if(e.which == 13) {
-    	var val = $(this).val();
+	if(e.which == 13) {
+		var val = $(this).val();
 		panel.write(val,'user');
-        BUFFER.setVal(val);
-        BUFFER.getEnterEvent()(val);
-        $(this).val('');
-    }
+		BUFFER.setVal(val);
+		BUFFER.getEnterEvent()(val);
+		$(this).val('');
+	}
 });
 
 
@@ -112,76 +113,22 @@ $('#rotacionar').on('click',function(){
 		TRANSFORM.rotate(actives,val);
 		OBJECT_LIST.render();
 		BUFFER.clearEnterEvent();
-
+		panel.write("Operação realizada com sucesso.");
 	});
 });
 $('#zoom').on('click',function(){
-	if(ZOOM===false){
-	}else{
-	}
-	ZOOM = !ZOOM;
-
+	
 	panel.clear();
 	resetCanvas();
-	var ids = TABLE.getSelecteds();
-	if(ids.length==0){ 
+	var id = TABLE.getSelecteds();
+	if(id.length==0 && ZOOM===false){ 
 		panel.write("Você precisa selecionar um elemento para realizar a função zoom. Será realizado zoom apenas <span class='destaque'>no primeiro</span> elemento selecionado.");
 		return false;
 	}
-	var active_obj = OBJECT_LIST.getActives(ids)[0];
-	//BACKUP_OBJSlIST =OBJECT_LIST.assign({}, OBJECT_LIST);
-	BACKUP_OBJSlIST = JSON.parse(JSON.stringify(OBJECT_LIST));
-
-	var $canvasWidth = $canvas.width();
-	var $canvasHeight = $canvas.height();
+	TRANSFORM.zoom(id);
+	panel.write("Operação realizada com sucesso.");
 	
-	var middle;
-	switch(active_obj.type){
-			case "triangle":
-			case "line":
-			case "rectangle":
-			case "forma_livre":
-				middle = getMiddleCoords(active_obj.coord);
-			break;
-			case "circle":
-				middle = active_obj.coord[0];
-			break;
-	}	
-	var canvasMiddle = new Coord(parseInt(($canvasWidth/2)-middle.x),-parseInt(($canvasHeight/2)-middle.y));
-	TRANSFORM.translate(OBJECT_LIST,canvasMiddle);
-
-
-	var menorX = Number.MAX_SAFE_INTEGER;
-	var menorY = Number.MAX_SAFE_INTEGER;
-	active_obj.coord.forEach(function(el){
-		if(($canvasWidth - el.x)<menorX){
-			menorX = el;
-		}
-		if(($canvasHeight - el.y)<menorY){
-			menorY = el;
-		}
-	});
-	var skewRatio;
-
-	log(menorX);
-	log(menorY);
-
-	if($canvasWidth/menorX.x > $canvasHeight/menorY.y){
-		skewRatio = ($canvasWidth-menorX.x)/menorX.x;
-	}else{
-		skewRatio =($canvasHeight-menorY.y)/menorY.y;
-	}
-	//caderno
-	log(skewRatio);
-	TRANSFORM.scale(OBJECT_LIST,new Coord(skewRatio,skewRatio));
-
-	OBJECT_LIST.render();
-
-	setTimeout(function(){
-		OBJECT_LIST = JSON.parse(JSON.stringify(BACKUP_OBJSlIST));
-		//TRANSFORM.translate(OBJECT_LIST,canvasMiddle);
-		OBJECT_LIST.render();
-	},200000);
 });
+//$('#zoom2').on('click',function(){	if(ZOOM===false){	}else{	}	ZOOM = !ZOOM;	panel.clear();	resetCanvas();	var ids = TABLE.getSelecteds();	if(ids.length==0){ 		panel.write("Você precisa selecionar um elemento para realizar a função zoom. Será realizado zoom apenas <span class='destaque'>no primeiro</span> elemento selecionado.");		return false;	}	/*BACKUP_OBJSlIST =OBJECT_LIST.assign({}, OBJECT_LIST);*/	BACKUP_OBJSlIST = JSON.parse(JSON.stringify(OBJECT_LIST));	var $canvasWidth = $canvas.width();	var $canvasHeight = $canvas.height();		var active_obj = OBJECT_LIST.getActives(ids)[0];	var middle = TRANSFORM.getMiddleZoomIn(active_obj);	var menorX = Number.MAX_SAFE_INTEGER;	var menorY = Number.MAX_SAFE_INTEGER;	var menorElX,menorElY;	active_obj.coord.forEach(function(el){		if(($canvasWidth - el.x) < menorX){			menorX = $canvasWidth - el.x;			menorElX = el.x;		}		if(($canvasHeight - el.y) < menorY){			menorY = $canvasHeight - el.y;			menorElY = el.y;		}	});		var skewRatio;	var diffX = Math.abs(menorElX-middle.x);	var diffY = Math.abs(middle.y-menorElY);		var razaoW = ($canvasWidth/2)/diffX;	var razaoH = ($canvasHeight/2)/diffY;	if(razaoW < razaoH){		skewRatio = razaoW;	}else{		skewRatio = razaoH;	}		skewRatio = skewRatio*0.98;		TRANSFORM.scale(OBJECT_LIST,new Coord(skewRatio,skewRatio));	log("midles");	log(middle);		middle = TRANSFORM.getMiddleZoomIn(active_obj);	log(middle);	var canvasMiddle = new Coord(parseInt(($canvasWidth/2)-middle.x),-parseInt(($canvasHeight/2)-middle.y));	TRANSFORM.translate(OBJECT_LIST,canvasMiddle);	OBJECT_LIST.render();	setTimeout(function(){		OBJECT_LIST = JSON.parse(JSON.stringify(BACKUP_OBJSlIST));		OBJECT_LIST.render();	},200000);});
 
 /*GROMETRIC TRANSFORM*/
