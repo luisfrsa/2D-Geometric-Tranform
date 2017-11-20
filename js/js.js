@@ -238,7 +238,6 @@ var transform = function(){
 			cur_obj=obj_list[i];
 			for(var j=0;j<cur_obj.coord.length;j++){
 				matriz[j]=[];
-				//matriz[cur_obj.id][j] = [];
 				matriz[j][0] = cur_obj.coord[j].x;
 				matriz[j][1] = cur_obj.coord[j].y;
 				matriz[j][2] = cur_obj.coord[j].z;
@@ -265,6 +264,7 @@ var transform = function(){
 	}
 	var zoom = function(id){
 		if(ZOOM===false){	
+
 
 			BACKUP_OBJSlIST = JSON.parse(JSON.stringify(OBJECT_LIST));//BACKUP_OBJSlIST =OBJECT_LIST.assign({}, OBJECT_LIST);
 
@@ -309,20 +309,16 @@ var transform = function(){
 			skewRatio = skewRatio*0.98;
 	
 			TRANSFORM.scale(OBJECT_LIST,new Coord(skewRatio,skewRatio));
-			log("midles");
-			log(middle);
-
-			
 			middle = TRANSFORM.getMiddleZoomIn(active_obj);
-
-			log(middle);
 
 			var canvasMiddle = new Coord(parseInt(($canvasWidth/2)-middle.x),-parseInt(($canvasHeight/2)-middle.y));
 			TRANSFORM.translate(OBJECT_LIST,canvasMiddle);
 			OBJECT_LIST.render();
+			$('#zoom').addClass('active');
 		}else{
 			OBJECT_LIST = JSON.parse(JSON.stringify(BACKUP_OBJSlIST));
 			OBJECT_LIST.render();
+			$('#zoom').removeClass('active');
 		}
 		ZOOM = !ZOOM;
 	}
@@ -396,11 +392,8 @@ var transform = function(){
 	var rotate = function(obj_actives,degree){
 		var obj_matrix = init_common(obj_actives);
 		obj_matrix.map(function(obj){
-			//return rotate_degree(obj,degree);em relacao a origem
 			var ret_origin =  translate_to_origin(obj);	
-			//return ret_origin.obj;
 			obj = rotate_degree(ret_origin.obj,degree);
-			//return obj;
 			return translation(obj,new Coord(ret_origin.middle.x,ret_origin.middle.y));
 		});		
 		end_common(obj_matrix);

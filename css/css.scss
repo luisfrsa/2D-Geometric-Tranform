@@ -1,6 +1,11 @@
 $canvasWSize:1100px;
 $canvasHSize:550px;
+
 $corp:#2a47ea;
+$cors:#16bf35;
+$cort:#831eaa;
+
+
 html,body{
 	margin:0;
 	padding:0;
@@ -65,7 +70,7 @@ table{
 	#transform li{
 		float: right;
 		i{
-			color:#16bf35;
+			color:$cors;
 		}
 	}
 	#coord{	
@@ -154,11 +159,11 @@ table{
 	font-weight: bold;
 }
 .system_console{
-	color:#16bf35;
+	color:$cors;
 	font-weight: bold;
 }
 .user_console{
-	color:#831eaa;
+	color:$cort;
 	font-weight: bold;
 }
 
